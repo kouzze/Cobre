@@ -1,37 +1,76 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
 import './App.css'
+import React, { useState } from "react";
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend } from "recharts";
 
-function App() {
-  const [count, setCount] = useState(0)
 
-  return (
-    <>
-      <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-    <h1> Trabajo Ambiental</h1>
-    <h2> Integrantes: Nicolás Jara</h2>
-        
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+interface CopperData {
+  date: string;
+  value: number;
 }
 
-export default App
+const CopperChart: React.FC = () => {
+
+  const [startDate, setStartDate] = useState<string>("");
+  const [endDate, setEndDate] = useState<string>("");
+
+  const copperData: CopperData[] = [
+    { date: "2023-01-07", value: 5.445 },
+    { date: "2028-01-07", value: 6.931 },
+    { date: "2033-01-01", value: 6.581 },   
+  ];
+
+  const handleChangeStartDate = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setStartDate(event.target.value);
+  };
+
+  const handleChangeEndDate = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setEndDate(event.target.value);
+  };
+
+  const filterData = () => {
+    let filteredData: CopperData[] = copperData;
+
+    if (startDate && endDate) {
+      filteredData = filteredData.filter((data) => data.date >= startDate && data.date <= endDate);
+    } else {
+      filteredData = [];
+    }
+
+    return filteredData;
+  };
+
+  const data = filterData();
+  const minDate = "2020-01-01";
+  const maxDate = "2030-12-31";
+
+  return (
+    <div>
+      <h1>Trabajo Ingeniería Ambiental</h1>
+      <h2>Gráfico de Costo del Cobre</h2>
+      <div>
+        <label>Fecha de inicio:</label>
+        <input type="date" value={startDate} onChange={handleChangeStartDate} min={minDate} max={maxDate} />
+      </div>
+      <div>
+        <label>Fecha de término:</label>
+        <input type="date" value={endDate} onChange={handleChangeEndDate} min={minDate} max={maxDate} />
+      </div>
+      <div style={{ width: "100%", height: 300 }}>
+        <LineChart width={500} height={300} data={data}>
+          <CartesianGrid strokeDasharray="3 3" />
+          <XAxis dataKey="date" />
+          <YAxis />
+          <Tooltip />
+          <Legend />
+          <Line type="monotone" dataKey="value" stroke="#8884d8" />
+        </LineChart>
+      </div>
+      
+    </div>
+
+
+  );
+  
+};
+
+export default CopperChart;
